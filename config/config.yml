@@ -2,13 +2,16 @@ log_format: '[%(name)s][%(asctime)s][%(lineno)3d][%(levelname)7s] %(message)s'
 date_time_format: '%m-%d %H:%M:%S'
 log_level: 'INFO'
 
-sspanel_url: 'https://api.example.com'
+sspanel_url: 'http://django-sspanel'
+node_id: 2
+token: 'c3NwYW5lbCsxMDAwMA=='
 
 test_host: 'gd.189.cn'
 test_port: 80
 test_time: 10
 
 diff_time: 10
+update_port_period: 60
 post_load_period: 60
 upload_throughput_period: 600
 online_count_dif_byte_threshold: 1024
@@ -31,4 +34,3 @@ manager_port: 8839
 
 fast_open: true
 mode: 'tcp_and_udp'
-

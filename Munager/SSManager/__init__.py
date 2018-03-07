@@ -91,8 +91,8 @@ class SSManager:
             method=method,
             fast_open=self.config.get('fast_open'),
             mode=self.config.get('mode'),
-            plugin=plugin,
-            plugin_opts=plugin_opts,
+            plugin=None if plugin=='None' else plugin,
+            plugin_opts=None if plugin_opts=='None' else plugin_opts,
         )
         req = 'add: {msg}'.format(msg=json.dumps(msg))
         # to bytes

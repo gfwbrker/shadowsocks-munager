@@ -1,0 +1,48 @@
+version: '3.4'
+
+services:
+  redis:
+    image: 'redis'
+    networks:
+      - ss-manyuser
+    restart: 'always'
+
+  ss-manager:
+    image: shadowsocks/shadowsocks-libev
+    networks:
+      - ss-manyuser
+    restart: 'always'
+    user: root
+    expose:
+      - "8839/udp"
+    ports:
+      - "10000-10100:10000-10100"
+      - "10000-10100:10000-10100/udp"
+    command: ss-manager --manager-address ss-manager:8839 -s 0.0.0.0 -t 600 /etc/shadowsocks-acl -v
+    environment:
+      - 'LISTEN=-s 0.0.0.0 -s ::'
+    volumes:
+      - './shadowsocks-acl:/etc/shadowsocks-acl:Z'
+
+  shadowmanager:
+    build: .
+    networks:
+      - ss-manyuser
+    restart: 'always'
+    stop_signal: 'SIGINT'
+    depends_on:
+      - 'redis'
+      - 'ss-manager'
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '200k'
+        max-file: '10'
+    environment:
+      - 'manager_host=ss-manager'
+      - 'redis_host=redis'
+      - 'sspanel_url=http://django-sspanel'
+
+networks:
+  ss-manyuser:
+    external: true

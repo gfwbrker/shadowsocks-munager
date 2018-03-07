@@ -100,13 +100,13 @@ class Munager:
             loss=loss,
         )
 
-    @gen.coroutine
-    def post_load(self):
-        # cpu, vir, swp, upload, download, sent_speed, recv_speed = self.sys_status
-        data = yield self.sys_status
-        result = yield self.mu_api.post_load(data)
-        if result:
-            self.logger.info('post system load finished.')
+    # @gen.coroutine
+    # def post_load(self):
+    #     # cpu, vir, swp, upload, download, sent_speed, recv_speed = self.sys_status
+    #     data = yield self.sys_status
+    #     result = yield self.mu_api.post_load(data)
+    #     if result:
+    #         self.logger.info('post system load finished.')
 
     @gen.coroutine
     def update_ss_manager(self):
@@ -168,7 +168,7 @@ class Munager:
                     self.logger.warning('error throughput, try fix.')
                     online_amount += 1
                     post_data.append(dict(
-                        id=user_id,
+                        user_id=user_id,
                         u=0,
                         d=throughput,
                     ))
@@ -177,7 +177,7 @@ class Munager:
                     if dif > self.config.get('online_count_dif_byte_threshold', 1024):
                         online_amount += 1
                     post_data.append(dict(
-                        id=user_id,
+                        user_id=user_id,
                         u=0,
                         d=dif,
                     ))
@@ -254,11 +254,11 @@ class Munager:
 
     def run(self):
         # period task
-        PeriodicCallback(
-            callback=self.post_load,
-            callback_time=self._to_msecond(self.config.get('post_load_period', 60)),
-            io_loop=self.ioloop,
-        ).start()
+        # PeriodicCallback(
+        #     callback=self.post_load,
+        #     callback_time=self._to_msecond(self.config.get('post_load_period', 60)),
+        #     io_loop=self.ioloop,
+        # ).start()
         PeriodicCallback(
             callback=self.update_ss_manager,
             callback_time=self._to_msecond(self.config.get('update_port_period', 60)),
@@ -280,11 +280,11 @@ class Munager:
                 callback_time=self._to_msecond(self.config.get('ip_watcher_period', 30)),
                 io_loop=self.ioloop,
             ).start()
-            PeriodicCallback(
-                callback=self.upload_connection_ip,
-                callback_time=self._to_msecond(self.config.get('upload_connection_ip_period', 3600)),
-                io_loop=self.ioloop,
-            ).start()
+            # PeriodicCallback(
+            #     callback=self.upload_connection_ip,
+            #     callback_time=self._to_msecond(self.config.get('upload_connection_ip_period', 3600)),
+            #     io_loop=self.ioloop,
+            # ).start()
         try:
             # Init task
             self.ioloop.run_sync(self.update_ss_manager)
