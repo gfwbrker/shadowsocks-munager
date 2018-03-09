@@ -13,7 +13,7 @@ test_time: 10
 diff_time: 10
 update_port_period: 60
 post_load_period: 60
-upload_throughput_period: 600
+upload_throughput_period: 60
 online_count_dif_byte_threshold: 1024
 
 memory_watcher_period: 600
