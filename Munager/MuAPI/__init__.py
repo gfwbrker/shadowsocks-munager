@@ -134,7 +134,6 @@ class MuAPI:
             node_id=self.node_id,
             data=users
         )
-        print(json_data)
         request = self._get_request('/api/traffic/upload', method='POST', json_data=json_data)
         response = yield self.client.fetch(request)
         content = response.body.decode('utf-8')
