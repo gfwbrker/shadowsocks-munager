@@ -157,6 +157,7 @@ class Munager:
     @gen.coroutine
     def upload_throughput(self):
         with (yield self.ss_manager_lock.acquire()):
+            self.logger.info("Start upload_throughput")
             port_state, user_id_state = self.ss_manager.state
             online_amount = 0
             post_data = list()
@@ -182,22 +183,27 @@ class Munager:
                         d=dif,
                     ))
             if post_data:
-                # upload to MuAPI
-                users = yield self.mu_api.upload_throughput(post_data)
-                for user_id, msg in users.items():
-                    if msg == 'ok':
-                        # user_id type is str
-                        user = user_id_state.get(user_id)
-                        throughput = user['throughput']
-                        self.ss_manager.set_cursor(user['port'], throughput)
-                        self.logger.info('update traffic for user: {}.'.format(user_id))
-                    else:
-                        self.logger.warning('fail to update traffic for user: {}.'.format(user_id))
+                try:
+                    # upload to MuAPI
+                    users = yield self.mu_api.upload_throughput(post_data)
+                    for user_id, msg in users.items():
+                        if msg == 'ok':
+                            # user_id type is str
+                            user = user_id_state.get(user_id)
+                            throughput = user['throughput']
+                            self.ss_manager.set_cursor(user['port'], throughput)
+                            self.logger.info('update traffic for user: {}.'.format(user_id))
+                        else:
+                            self.logger.warning('fail to update traffic for user: {}.'.format(user_id))
+                except Exception as e:
+                    self.logger.info('upload_throughput Failed! exception: {}'.format(e))
 
             # update online users count
             result = yield self.mu_api.post_online_user(online_amount)
             if result:
                 self.logger.info('upload online user count: {}.'.format(online_amount))
+            else:
+                self.logger.warning('upload online user failed!')
 
     @gen.coroutine
     def memory_leak_watcher(self):

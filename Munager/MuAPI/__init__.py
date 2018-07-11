@@ -45,9 +45,15 @@ class MuAPI:
 
     def _get_request(self, path, query=dict(), method='GET', json_data=None, form_data=None):
         url = urljoin(self.url_base, path)
-        query.update({'token': self.config.get('token', '')})
-        query_s = '?' + urlencode(query)
-        url += query_s
+        token = self.config.get('token', '')
+
+        if method == 'GET':
+            query.update({'token': token})
+            query_s = '?' + urlencode(query)
+            url += query_s
+        elif method == 'POST':
+            json_data['token'] = token
+
         req_para = dict(
             url=url,
             method=method,
